@@ -2,7 +2,7 @@ import axios from 'axios'
 import store from '@/store'
 
 const request = axios.create({
-  baseURL: 'http://toutiao.itheima.net'
+  baseURL: 'http://weldon.net.cn:8000'
 })
 
 // 请求拦截器

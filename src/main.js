@@ -7,6 +7,7 @@ import router from './router'
 import '@/styles/index.less'
 import '@/styles/font/iconfont.css'
 import store from './store'
+import '@/utils/day'
 
 Vue.use(Vant)
 
