@@ -42,7 +42,7 @@
       closeable
       close-icon-position="top-left"
     >
-      <ChannelEdit :active="active" :myChannels="channels"/>
+      <ChannelEdit @changeChannels="changeChannels" :active.sync="active" :myChannels="channels"/>
     </van-popup>
   </div>
 </template>
@@ -75,6 +75,10 @@ export default {
   mounted () {
   },
   methods: {
+    changeChannels (index) {
+      this.active = index
+      this.isChannelEditShow = false
+    },
     async getChannels () {
       const res = await getUserChannels()
       this.channels = res.data.data.channels

@@ -13,14 +13,20 @@
           round
           plain
           type="danger"
+          @click="isEdit = !isEdit"
         >
-          完成/编辑
+          {{ isEdit ? '完成' : '编辑' }}
         </van-button>
       </template>
     </van-cell>
     <van-grid class="my-grid" :gutter="10">
-      <van-grid-item class="grid-item" v-for="(item, index) in myChannels" :key="item.id">
-        <template #icon>
+      <van-grid-item
+        @click="myChannelClick(index, item)"
+        class="grid-item"
+        v-for="(item, index) in myChannels"
+        :key="item.id"
+      >
+        <template #icon v-if="isEdit && item.id !== 0">
           <van-icon name="clear"/>
         </template>
         <template #text>
@@ -38,6 +44,7 @@
       :gutter="10"
     >
       <van-grid-item
+        @click="addChannel(item)"
         v-for="item in recommendChannels"
         :key="item.id"
         class="grid-item"
@@ -50,8 +57,12 @@
 </template>
 
 <script>
-import { getAllChannels } from '@/api/channels'
+import { addUserChannel, deleteUserChannel, getAllChannels } from '@/api/channels'
 import { differenceBy } from 'lodash'
+import { mapState } from 'vuex'
+import { setItem } from '@/utils/localstoreage'
+import { TOUTIAO_CHANNELS } from '@/constants'
+import { MyNotifyDanger } from '@/utils/notify'
 
 export default {
   name: 'channel-edit',
@@ -65,25 +76,79 @@ export default {
   },
   data () {
     return {
-      allChannels: []
+      allChannels: [],
+      isEdit: false
     }
   },
   created () {
     this.getAllChannels()
   },
   computed: {
+    ...mapState(['user']),
     recommendChannels () {
       // 通过lodash进行不同数据的对比
       return differenceBy(this.allChannels, this.myChannels, 'id')
     }
-    // recommendChannels () {
-    //   return this.allChannels.filter(item => {
-    //     // item
-    //     return !this.myChannels.some(myChannel => item.id === myChannel.id)
-    //   })
-    // }
   },
   methods: {
+    async deleteChannel (id) {
+      try {
+        if (this.user) {
+          await deleteUserChannel(id)
+          this.$toast('删除成功')
+        } else {
+          //  修改之后channel存起来
+          setItem(TOUTIAO_CHANNELS, this.myChannels)
+        }
+      } catch (e) {
+        MyNotifyDanger('删除失败')
+      }
+    },
+    myChannelClick (index, item) { // TODO: 注意参数接收的顺序不要写错了
+      if (this.isEdit) {
+        if (item.id === 0) {
+          //  推荐频道
+          return this.$notify({
+            type: 'danger',
+            message: '都说了不让删~~~~'
+          })
+        }
+        // 1、删除频道
+        if (index <= this.active) {
+          this.$emit('update:active', this.active - 1)
+        }
+        this.myChannels.splice(index, 1)
+        this.deleteChannel(item.id)
+      } else {
+        // 1、切换频道
+        // 2、弹出层隐藏
+        this.$emit('changeChannels', index)
+      }
+    },
+    async addChannel (item) {
+      //  判断用户是否登录
+      if (this.user) {
+        // 登录
+        try {
+          await addUserChannel({
+            id: item.id, // 频道ID
+            seq: this.myChannels.length // 序号
+          })
+
+          this.myChannels.push(item)
+          this.$notify({
+            type: 'success',
+            message: '添加频道成功'
+          })
+        } catch (e) {
+          this.$toast('保存失败，请稍后重试')
+        }
+      } else {
+        // 没有登录 存储到本地存储
+        this.myChannels.push(item)
+        setItem(TOUTIAO_CHANNELS, this.myChannels)
+      }
+    },
     async getAllChannels () {
       const res = await getAllChannels()
       console.log(res.data.data.channels)
