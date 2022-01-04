@@ -1,6 +1,6 @@
 <template>
-  <div class="article-item">
-
+  <div class="article-item"
+  >
     <van-cell>
       <template #title>
         {{ article.title }}
@@ -14,7 +14,6 @@
               :key="index"
             >
               <van-image
-                @click="showImage(article.cover.images)"
                 width="100"
                 height="100"
                 fit="fill"

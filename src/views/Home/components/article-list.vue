@@ -15,9 +15,11 @@
         :error.sync="error"
         error-text="出错了"
       >
-<!--        <van-cell v-for="item in list" :key="item.art_id" :title="item.title"/>-->
-
-        <ArticleItem v-for="item in list" :key="item.art_id" :article="item"/>
+        <ArticleItem
+          class="aaa"
+          @click.native="$router.push(`/article/${item.art_id}`)"
+          v-for="item in list"
+          :key="item.art_id" :article="item"/>
       </van-list>
     </van-pull-refresh>
   </div>

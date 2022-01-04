@@ -1,0 +1,76 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+</head>
+<body>
+<input type="text">
+<input id="input1" type="text">
+<!--500-->
+<script>
+  // const inputElement = document.querySelector('input')
+  // const inputEle1 = document.querySelector('#input1')
+  // let timer = null
+  // // 最后一次肯定会被执行
+  // // inputElement.oninput = function () {
+  // //
+  // // }
+  // inputElement.oninput = debounce(function () {
+  //   console.log(1)
+  // }, 500)
+  //
+  // inputEle1.oninput = throttle(function (e) {
+  //   // console.log(e)
+  //   console.log('1')
+  // }, 1000)
+  //
+  // // 防抖
+  // function debounce (fn, wait) {
+  //   let timer = null // 保存了上一次定时的id
+  //   return function (...args) {
+  //     clearTimeout(timer)
+  //     timer = setTimeout(() => {
+  //       fn.apply(this, args)
+  //     }, wait)
+  //   }
+  // }
+  //
+  // // 节流
+  // function throttle (fn, wait) {
+  //   let flag = null // true
+  //   return function () {
+  //     if (flag) return
+  //     flag = true
+  //     fn()
+  //     setTimeout(() => {
+  //       flag = false
+  //     }, wait)
+  //   }
+  // }
+
+  // 闭包
+  // 作用域链
+  let cccc = 'b' // 么有在window身上，全局script作用域
+  var aaaaa = 'c'
+
+  function foo () {
+    let num = 1
+    let b = 2
+    const c = 'c'
+    return function bar () {
+
+      // debugger
+      console.log(num)
+      console.log(b)
+    }
+  }
+
+  const a = foo()
+
+  console.dir(a)
+
+</script>
+</body>
+</html>

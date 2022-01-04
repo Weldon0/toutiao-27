@@ -11,6 +11,7 @@
           round
           size="small"
           type="info"
+          @click="$router.push('/search')"
         >
           搜索
         </van-button>
@@ -48,10 +49,12 @@
 </template>
 
 <script>
-
+import { mapState } from 'vuex'
 import { getUserChannels } from '@/api/user'
 import ArticleList from '@/views/Home/components/article-list'
 import ChannelEdit from '@/views/Home/components/channel-edit'
+import { getItem } from '@/utils/localstoreage'
+import { TOUTIAO_CHANNELS } from '@/constants'
 
 export default {
   name: 'Home',
@@ -67,7 +70,9 @@ export default {
       isChannelEditShow: false
     }
   },
-  computed: {},
+  computed: {
+    ...mapState(['user'])
+  },
   watch: {},
   created () {
     this.getChannels()
@@ -79,9 +84,23 @@ export default {
       this.active = index
       this.isChannelEditShow = false
     },
+    // 获取当前用户的频道数据
     async getChannels () {
-      const res = await getUserChannels()
-      this.channels = res.data.data.channels
+      // const res = await getUserChannels()
+      // this.channels = res.data.data.channels
+
+      // 用户登录了 ==> 请求接口
+      // 本地存储没有数据 ==> 请求接口
+      const localChannels = getItem(TOUTIAO_CHANNELS)
+      if (this.user || !localChannels) {
+        // 登录了
+        // 本地存储没数据
+        const res = await getUserChannels()
+        this.channels = res.data.data.channels
+      } else {
+        // 没有登录并且本地存储有数据
+        this.channels = localChannels
+      }
     }
   }
 }

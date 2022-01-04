@@ -62,7 +62,7 @@ import { differenceBy } from 'lodash'
 import { mapState } from 'vuex'
 import { setItem } from '@/utils/localstoreage'
 import { TOUTIAO_CHANNELS } from '@/constants'
-import { MyNotifyDanger } from '@/utils/notify'
+import { createDangerNotify, createSuccessNotify } from '@/utils/notify'
 
 export default {
   name: 'channel-edit',
@@ -95,23 +95,20 @@ export default {
       try {
         if (this.user) {
           await deleteUserChannel(id)
-          this.$toast('删除成功')
+          createSuccessNotify('删除成功')
         } else {
           //  修改之后channel存起来
           setItem(TOUTIAO_CHANNELS, this.myChannels)
         }
       } catch (e) {
-        MyNotifyDanger('删除失败')
+        createDangerNotify('删除失败')
       }
     },
     myChannelClick (index, item) { // TODO: 注意参数接收的顺序不要写错了
       if (this.isEdit) {
         if (item.id === 0) {
           //  推荐频道
-          return this.$notify({
-            type: 'danger',
-            message: '都说了不让删~~~~'
-          })
+          return createDangerNotify('都说了不让删~~~~')
         }
         // 1、删除频道
         if (index <= this.active) {
@@ -136,12 +133,9 @@ export default {
           })
 
           this.myChannels.push(item)
-          this.$notify({
-            type: 'success',
-            message: '添加频道成功'
-          })
+          createSuccessNotify('添加频道成功')
         } catch (e) {
-          this.$toast('保存失败，请稍后重试')
+          createDangerNotify('保存失败，请稍后重试')
         }
       } else {
         // 没有登录 存储到本地存储

@@ -1,8 +1,7 @@
 import { Notify } from 'vant'
+import { curry } from 'lodash'
 
-export function MyNotifyDanger (message) {
-  Notify({
-    type: 'danger',
-    message
-  })
-}
+const createNotify = curry((type, message) => Notify({ type, message }), 2)
+export const createDangerNotify = createNotify('danger')
+export const createWarningNotify = createNotify('warning')
+export const createSuccessNotify = createNotify('success')

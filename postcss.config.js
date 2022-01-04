@@ -7,7 +7,8 @@ module.exports = {
         console.log(obj)
         return obj.file.includes('vant') ? 37.5 : 75
       },
-      propList: ['*']
+      propList: ['*'],
+      exclude: 'github-markdown-css'
     }
   }
 }

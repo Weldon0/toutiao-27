@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<p id="box"></p>
+<script>
+//   hello
+  const str = "Hello World"
+
+  // 结果：<span style="color: red">Hello</span> World
+  const html = "Hello World".replace('Hello', '<span style="color: red">Hello</span>')
+  document.querySelector('#box').innerHTML = html
+
+  // 需要注意的是，replace 方法的字符串匹配只能替换第1个满足的字符
+  // <span style="color: red">Hello</span> World Hello abc
+  "Hello World Hello abc".replace('Hello', '<span style="color: red">Hello</span>')
+
+  // 如果想要全文替换，使用正则表达式
+  // g 全局
+  // i 忽略大小写
+  // <span style="color: red">Hello</span> World <span style="color: red">Hello</span> abc
+  "Hello World Hello abc".replace(/Hello/gi, '<span style="color: red">Hello</span>')
+</script>
+</body>
+</html>
