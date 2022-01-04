@@ -9,6 +9,13 @@ const createNotify = curry((type, message) => {
   })
 })
 
+function Show () {
+  console.log(new.target)
+}
+
+const a = Show()
+console.log(a)
+
 const warningShow = createNotify('warning')
 warningShow('提示消息')
 
@@ -56,17 +63,17 @@ warningShow('提示消息')
 // export const createWarningNotify = createNotify('warning')
 // export const createSuccessNotify = createNotify('success')
 
-function match (reg, str) {
-  return str.match(reg)
-}
-
-const regMath = curry(match)
-
-const matchNumber = regMath(/\d/)
-regMath()
-
-console.log(matchNumber(1))
-
-console.log(match(/\d/, 1))
-console.log(match(/\d/, 2))
-console.log(match(/\d/, 3))
+// function match (reg, str) {
+//   return str.match(reg)
+// }
+//
+// const regMath = curry(match)
+//
+// const matchNumber = regMath(/\d/)
+// regMath()
+//
+// console.log(matchNumber(1))
+//
+// console.log(match(/\d/, 1))
+// console.log(match(/\d/, 2))
+// console.log(match(/\d/, 3))
