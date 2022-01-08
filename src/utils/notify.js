@@ -2,22 +2,22 @@ import { Notify } from 'vant'
 
 import { curry } from 'lodash'
 
-const createNotify = curry((type, message) => {
-  return Notify({
-    type,
-    message
-  })
-})
-
-function Show () {
-  console.log(new.target)
-}
-
-const a = Show()
-console.log(a)
-
-const warningShow = createNotify('warning')
-warningShow('提示消息')
+// const createNotify = curry((type, message) => {
+//   return Notify({
+//     type,
+//     message
+//   })
+// })
+//
+// function Show () {
+//   console.log(new.target)
+// }
+//
+// const a = Show()
+// console.log(a)
+//
+// const warningShow = createNotify('warning')
+// warningShow('提示消息')
 
 // createNotify('danger')('提示信息')
 
@@ -58,10 +58,10 @@ warningShow('提示消息')
 //   })
 // }
 
-// const createNotify = curry((type, message) => Notify({ type, message }), 2)
-// export const createDangerNotify = createNotify('danger')
-// export const createWarningNotify = createNotify('warning')
-// export const createSuccessNotify = createNotify('success')
+const createNotify = curry((type, message) => Notify({ type, message }), 2)
+export const createDangerNotify = createNotify('danger')
+export const createWarningNotify = createNotify('warning')
+export const createSuccessNotify = createNotify('success')
 
 // function match (reg, str) {
 //   return str.match(reg)

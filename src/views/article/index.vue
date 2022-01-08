@@ -21,7 +21,7 @@
       <!-- /加载中 -->
 
       <!-- 加载完成-文章详情 -->
-      <div class="article-detail markdown-body"  v-else-if="article.title">
+      <div class="article-detail markdown-body" v-else-if="article.title">
         <!-- 文章标题 -->
         <h1 class="article-title">{{ article.title }}</h1>
         <!-- /文章标题 -->
@@ -37,26 +37,18 @@
           />
           <div slot="title" class="user-name">{{ article.aut_name }}</div>
           <div slot="label" class="publish-date">{{ article.pubdate }}</div>
-          <van-button
-            class="follow-btn"
-            type="info"
-            color="#3296fa"
-            round
-            size="small"
-            icon="plus"
-          >关注
-          </van-button>
-          <!-- <van-button
-            class="follow-btn"
-            round
-            size="small"
-          >已关注</van-button> -->
+          <FollowUser
+            :authorId="article.aut_id"
+            :isFollowed.sync="article.is_followed"
+          />
         </van-cell>
-        <!-- /用户信息 -->
+        <!-- 用户信息 -->
 
         <!-- 文章内容 -->
         <div class="article-content" ref="articleRef" v-html="article.content"></div>
         <van-divider>正文结束</van-divider>
+        <!-- 评论区域-->
+        <CommentList :list="commentList" ref="commentList" :totalCount.sync="totalCount" :source="article.art_id"/>
         <!-- 底部区域 -->
         <div class="article-bottom">
           <van-button
@@ -64,21 +56,16 @@
             type="default"
             round
             size="small"
+            @click="isPostShow=true"
           >写评论
           </van-button>
           <van-icon
             name="comment-o"
-            info="123"
+            :badge="totalCount"
             color="#777"
           />
-          <van-icon
-            color="#777"
-            name="star-o"
-          />
-          <van-icon
-            color="#777"
-            name="good-job-o"
-          />
+          <CollectArticle :articleId="article.art_id" :isCorrect.sync="article.is_collected" class="btn-item"/>
+          <LikeArticle class="btn-item" :isLike.sync="article.attitude" :articleId="article.art_id"></LikeArticle>
           <van-icon name="share" color="#777777"></van-icon>
         </div>
         <!-- /底部区域 -->
@@ -100,19 +87,62 @@
       </div>
       <!-- /加载失败：其它未知错误（例如网络原因或服务端异常） -->
     </div>
+
+    <!--------------------------------  发布评论 -------------------------------------->
+    <van-popup v-model="isPostShow" position="bottom">
+      <CommentPost
+        @onPostSuccess="onPostSuccess"
+        :target="article.art_id"
+      ></CommentPost>
+    </van-popup>
+    <!-------------------------------- /发布评论 -------------------------------------->
+
+    <!------------------------ 评论回复 ------------------------------>
+    <van-popup
+      v-model="isReplyShow"
+      position="bottom"
+      style="height: 100%"
+    >
+      <CommentReply v-if="isReplyShow" @close="isReplyShow=false" :comment="currentComment"/>
+    </van-popup>
+    <!------------------------ /评论回复 ------------------------------>
   </div>
 </template>
 
 <script>
 import { getArticleById } from '@/api/article'
+// import { cloneDeep } from 'lodash'
+import FollowUser from '@/views/article/components/FollowUser'
 import 'github-markdown-css'
 import { ImagePreview } from 'vant'
-const arr = [2, 4, 5]
-console.log(arr.at(-1))
-
+import CollectArticle from '@/views/article/components/CollectArticle'
+import LikeArticle from '@/views/article/components/LikeArticle'
+import CommentList from '@/views/article/components/CommentList'
+import CommentPost from '@/views/article/components/CommentPost'
+import CommentReply from '@/views/article/components/CommentReply'
 export default {
   name: 'ArticleIndex',
-  components: {},
+  components: {
+    FollowUser,
+    CollectArticle,
+    LikeArticle,
+    CommentList,
+    CommentPost,
+    CommentReply
+  },
+  provide () {
+    // this ==> 定义方法位置的组件
+    return {
+      handleReply: (item) => {
+        // 要使用剪头函数才能获取父组件的this
+        // console.log(item)
+        this.currentComment = item
+        this.isReplyShow = true
+      },
+      num: 0,
+      articleId: this.articleId
+    }
+  },
   props: {
     // 使用props获取动态路由的数据
     articleId: {
@@ -125,7 +155,12 @@ export default {
       article: {},
       loading: false,
       errStatus: '',
-      imgList: []
+      imgList: [],
+      totalCount: 0,
+      isPostShow: false,
+      commentList: [],
+      isReplyShow: false,
+      currentComment: {}
     }
   },
   computed: {},
@@ -134,8 +169,13 @@ export default {
     this.getDetail()
   },
   mounted () {
+    console.log(this.$refs)
   },
   methods: {
+    onPostSuccess (item) {
+      this.commentList.unshift(item)
+      this.isPostShow = false
+    },
     previewImg () {
       // ref对应的dom节点
       const box = this.$refs.articleRef
@@ -161,12 +201,11 @@ export default {
         const res = await getArticleById(this.articleId)
         console.log(res.data.data)
         this.article = res.data.data
-        setTimeout(() => {
+
+        this.loading = false
+        this.$nextTick(() => {
           this.previewImg()
-        }, 0)
-        // this.$nextTick(() => {
-        //   console.log(this.$refs.articleRef)
-        // })
+        })
       } catch (e) {
         if (e?.response?.status === 404) {
           this.errStatus = 404
@@ -286,6 +325,19 @@ export default {
     height: 88px;
     border-top: 1px solid #d8d8d8;
     background-color: #fff;
+
+    .btn-item {
+      border: none;
+      box-sizing: content-box;
+
+      /deep/ .van-icon-star {
+        color: red;
+      }
+
+      /deep/ .van-icon-good-job {
+        color: red;
+      }
+    }
 
     .comment-btn {
       width: 282px;

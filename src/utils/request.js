@@ -8,7 +8,7 @@ const jsonObj = '{"art_id": 9007199254740995, "name": "黑马"}'
 console.log(jsonBig.parse(jsonObj).art_id.toString())
 
 const request = axios.create({
-  baseURL: 'http://weldon.net.cn:8000',
+  baseURL: 'http://42.192.129.12:8000',
   transformResponse: [function (data) {
     try {
       return jsonBig.parse(data)
