@@ -4,7 +4,7 @@
       show-toolbar
       title="修改性别"
       :columns="columns"
-      :default-index="gender"
+      :default-index="localGender"
       @cancel="$emit('close')"
       @confirm="onConfirm"
       @change="onPickerChange"
@@ -13,6 +13,7 @@
 </template>
 
 <script>
+import { updateUserProfile } from '@/api/user'
 
 export default {
   name: 'UpdateGender',
@@ -23,7 +24,7 @@ export default {
   data () {
     return {
       columns: ['男', '女'],
-      localGender: null // 当前性别
+      localGender: this.gender
     }
   },
   computed: {},
@@ -34,12 +35,27 @@ export default {
   },
   methods: {
     // 确定事件
-    onConfirm () {
+    async onConfirm () {
+      this.$toast.loading({
+        message: '提交中...',
+        forbidClick: true,
+        duration: 0
+      })
 
+      try {
+        await updateUserProfile({
+          // 把自己本地修改的性别数据提交给服务器端
+          gender: this.localGender
+        })
+        this.$toast.success('修改成功')
+        this.$emit('close')
+        this.$emit('update:gender', this.localGender)
+      } catch (e) {
+        this.$toast.fail('修改失败')
+      }
     },
     // 选择器发生变化的时候
     onPickerChange (picker, value, index) {
-      console.log(picker, value, index)
       this.localGender = index
     }
   }

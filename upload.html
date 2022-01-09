@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>客户端图片上传预览示例</title>
+    <style>
+      .img-wrap {
+        width: 200px;
+        height: 200px;
+        border: 1px solid #ccc;
+      }
+
+      img {
+        max-width: 100%;
+      }
+    </style>
+</head>
+<body>
+<h1>客户端图片上传预览示例</h1>
+<div class="img-wrap">
+    <img src="blob:http://localhost:8080/a20f27c9-60b2-4c7f-b5a8-500a9ae5085b
+" alt="" id="img">
+</div>
+<br>
+<input type="file" id="file" onchange="onFileChange()">
+<script>
+  const img = document.querySelector('#img')
+  const file = document.querySelector('#file')
+
+  function onFileChange () {
+    // 得到 file-input 的文件对象
+    const fileObj = file.files[0]
+    const data = window.URL.createObjectURL(fileObj)
+    img.src = data
+  }
+</script>
+</body>
+</html>
